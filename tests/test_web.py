@@ -3,13 +3,13 @@
 
 import unittest
 
-from pyproject import PyProject
+from pylookyloomonitoring import PyLookylooMonitoring
 
 
 class TestBasic(unittest.TestCase):
 
     def setUp(self):
-        self.client = PyProject(root_url="http://127.0.0.1:9999")
+        self.client = PyLookylooMonitoring(root_url="http://127.0.0.1:5200")
 
     def test_up(self):
         self.assertTrue(self.client.is_up)
