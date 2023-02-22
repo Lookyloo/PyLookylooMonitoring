@@ -4,10 +4,46 @@
 from importlib.metadata import version
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Optional, List, Tuple, Any, MutableMapping, Union
+from typing import Dict, Optional, List, Tuple, Any, Union, TypedDict
 from urllib.parse import urljoin, urlparse
 
 import requests
+
+
+class CaptureSettings(TypedDict, total=False):
+    '''The capture settings that can be passed to Lookyloo.'''
+
+    url: Optional[str]
+    document_name: Optional[str]
+    document: Optional[str]
+    browser: Optional[str]
+    device_name: Optional[str]
+    user_agent: Optional[str]
+    proxy: Optional[Union[str, Dict[str, str]]]
+    general_timeout_in_sec: Optional[int]
+    cookies: Optional[List[Dict[str, Any]]]
+    headers: Optional[Union[str, Dict[str, str]]]
+    http_credentials: Optional[Dict[str, int]]
+    viewport: Optional[Dict[str, int]]
+    referer: Optional[str]
+    force: Optional[bool]
+    recapture_interval: Optional[int]
+    priority: Optional[int]
+
+
+class MonitorSettings(TypedDict, total=False):
+    capture_settings: CaptureSettings
+    frequency: str
+    expire_at: Optional[float]
+    collection: Optional[str]
+
+
+class PyLookylooMonitoringException(Exception):
+    ...
+
+
+class TimeError(PyLookylooMonitoringException):
+    ...
 
 
 class PyLookylooMonitoring():
@@ -68,14 +104,21 @@ class PyLookylooMonitoring():
         r = self.session.get(urljoin(self.root_url, str(Path('json', 'changes', uuid))))
         return r.json()
 
-    def monitor(self, capture_settings: MutableMapping[str, Any], /, frequency: str, *,
+    def monitor(self, capture_settings: CaptureSettings, /, frequency: str, *,
                 expire_at: Optional[Union[datetime, str, int, float]]=None, collection: Optional[str]=None) -> str:
-        to_post = {
+        to_post: MonitorSettings = {
             'capture_settings': capture_settings,
             'frequency': frequency
         }
         if expire_at:
-            to_post['expire_at'] = expire_at
+            if isinstance(expire_at, (str, int, float)):
+                _expire = float(expire_at)
+            if isinstance(expire_at, datetime):
+                _expire = expire_at.timestamp()
+            if _expire < datetime.now().timestamp():
+                # The expiration time is in the past.
+                raise TimeError('Expiration time in the past.')
+            to_post['expire_at'] = _expire
         if collection:
             to_post['collection'] = collection
 
