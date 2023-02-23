@@ -2,7 +2,7 @@ import argparse
 import json
 import sys
 
-from .api import PyLookylooMonitoring
+from .api import PyLookylooMonitoring, CaptureSettings  # noqa
 
 
 def main():
