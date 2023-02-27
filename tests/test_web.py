@@ -18,7 +18,13 @@ class TestBasic(unittest.TestCase):
         self.assertTrue(self.client.is_up)
         self.assertTrue(self.client.redis_up())
 
-    def test_monitor_expire(self):
+    def test_instance_settings(self):
+        settings = self.client.instance_settings()
+        self.assertTrue('min_frequency' in settings, settings)
+        self.assertTrue('max_captures' in settings, settings)
+        self.assertTrue('force_expire' in settings, settings)
+
+    def test_monitor_expire(self) -> None:
         capture_settings: CaptureSettings = {'url': 'https://circl.lu'}
         monitor_uuid = self.client.monitor(capture_settings,
                                            frequency='hourly',

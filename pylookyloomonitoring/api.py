@@ -124,3 +124,7 @@ class PyLookylooMonitoring():
 
         r = self.session.post(urljoin(self.root_url, 'monitor'), json=to_post)
         return r.json()
+
+    def instance_settings(self) -> Dict[str, Union[str, int, bool]]:
+        r = self.session.get(urljoin(self.root_url, str(Path('json', 'settings'))))
+        return r.json()
