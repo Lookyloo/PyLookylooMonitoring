@@ -38,6 +38,12 @@ class MonitorSettings(TypedDict, total=False):
     collection: Optional[str]
 
 
+class MonitoringInstanceSettings(TypedDict):
+    min_frequency: int
+    max_captures: int
+    force_expire: bool
+
+
 class PyLookylooMonitoringException(Exception):
     ...
 
@@ -125,6 +131,6 @@ class PyLookylooMonitoring():
         r = self.session.post(urljoin(self.root_url, 'monitor'), json=to_post)
         return r.json()
 
-    def instance_settings(self) -> Dict[str, Union[str, int, bool]]:
+    def instance_settings(self) -> MonitoringInstanceSettings:
         r = self.session.get(urljoin(self.root_url, str(Path('json', 'settings'))))
         return r.json()
