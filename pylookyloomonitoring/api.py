@@ -32,6 +32,8 @@ class CaptureSettings(TypedDict, total=False):
 
 
 class MonitorSettings(TypedDict, total=False):
+    '''The settings for the capture we want to monitor'''
+
     capture_settings: CaptureSettings
     frequency: str
     expire_at: Optional[float]
@@ -39,6 +41,7 @@ class MonitorSettings(TypedDict, total=False):
 
 
 class MonitoringInstanceSettings(TypedDict):
+    '''The settings of the monitoring instance.'''
     min_frequency: int
     max_captures: int
     force_expire: bool
@@ -83,10 +86,15 @@ class PyLookylooMonitoring():
         return r.json()
 
     def collections(self) -> List[str]:
+        """Get all the collections"""
         r = self.session.get(urljoin(self.root_url, str(Path('json', 'collections'))))
         return r.json()
 
     def monitored(self, collection: Optional[str]=None) -> List[Tuple[str, Dict[str, Tuple[bool, str]]]]:
+        """Get the list of what is currently monitored.
+
+        :param collection: Filter by collection
+        """
         if collection:
             _path = str(Path('json', 'monitored', collection))
         else:
@@ -95,6 +103,10 @@ class PyLookylooMonitoring():
         return r.json()
 
     def expired(self, collection: Optional[str]=None) -> List[Tuple[str, Dict[str, Tuple[bool, str]]]]:
+        """Get the list of the capture we're not monitoring anymore.
+
+        :param collection: Filter by collection
+        """
         if collection:
             _path = str(Path('json', 'expired', collection))
         else:
@@ -103,15 +115,30 @@ class PyLookylooMonitoring():
         return r.json()
 
     def stop_monitor(self, uuid: str) -> bool:
+        """Stop monitoring a specific capture
+
+        :param uuid: the UUID we want to expire
+        """
         r = self.session.post(urljoin(self.root_url, str(Path('stop_monitor', uuid))))
         return r.json()
 
     def changes(self, uuid: str) -> Dict[str, Any]:
+        """Get the changes for a specific monitored capture.
+
+        :param uuid: the UUID we want to get the changes
+        """
         r = self.session.get(urljoin(self.root_url, str(Path('json', 'changes', uuid))))
         return r.json()
 
     def monitor(self, capture_settings: CaptureSettings, /, frequency: str, *,
                 expire_at: Optional[Union[datetime, str, int, float]]=None, collection: Optional[str]=None) -> str:
+        """Add a new capture to monitor.
+
+        :param capture_settings: The settings of the capture
+        :param frequency: The frequency of the monitoring
+        :param expire_at: When the monitoring should expire.
+        :param collection: The collection the monitored capture is part of.
+        """
         to_post: MonitorSettings = {
             'capture_settings': capture_settings,
             'frequency': frequency
@@ -132,5 +159,6 @@ class PyLookylooMonitoring():
         return r.json()
 
     def instance_settings(self) -> MonitoringInstanceSettings:
+        """Get the settings of the monitoring instance."""
         r = self.session.get(urljoin(self.root_url, str(Path('json', 'settings'))))
         return r.json()
