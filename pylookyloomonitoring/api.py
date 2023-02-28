@@ -30,6 +30,8 @@ class CaptureSettings(TypedDict, total=False):
     recapture_interval: Optional[int]
     priority: Optional[int]
 
+    listing: Optional[bool]
+
 
 class MonitorSettings(TypedDict, total=False):
     '''The settings for the capture we want to monitor'''
