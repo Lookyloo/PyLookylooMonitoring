@@ -17,8 +17,8 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'PyProject'
-copyright = '2021, Lookyloo team'
+project = 'PyLookylooMonitoring'
+copyright = '2023, Lookyloo team'
 author = 'Lookyloo team'
 
 # The full version, including alpha/beta/rc tags

@@ -1,30 +1,33 @@
-.. PyLookyloo documentation master file, created by
-   sphinx-quickstart on Tue Mar 23 12:28:17 2021.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-Welcome to PyProject's documentation!
+Welcome to PyLookylooMonitorings documentation!
 =============================================
 
-This is the client API for `PyProject <https://github.com/Lookyloo/project_template>`_:
-
-  foo
-
+This is the client API for `Lookyloo Monitoring <https://github.com/Lookyloo/monitoring>`_
 
 Installation
 ------------
 
 The package is available on PyPi, so you can install it with::
 
-  pip install pyproject
+  pip install pylookyloomonitoring
 
 
 Usage
 -----
 
-You can use `client` as a python script::
+You can use `lookyloo_monitor` as a python script::
 
-	$ client -h
+	$ lookyloo_monitor -h
+	usage: lookyloo_monitor [-h] --url URL (--monitor_url MONITOR_URL | --compare COMPARE)
+
+	Talk to a Lookyloo Monitoring instance.
+
+	options:
+	  -h, --help            show this help message and exit
+	  --url URL             URL of the instance.
+	  --monitor_url MONITOR_URL
+							URL to monitor. It will be monitered hourly.
+	  --compare COMPARE     UUID of the monitoring.
+
 
 Or as a library:
 

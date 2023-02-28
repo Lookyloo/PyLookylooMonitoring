@@ -1,20 +1,31 @@
-# Python client and module for Project Template
+# Python client and module for Lookyloo Monitoring
 
-This is a simple template used in all the web based APIs in this repository, and a few others.
+There is no public monitoring instance for now, so you will need to
+install [your own instance](https://github.com/Lookyloo/monitoring).
 
 ## Installation
 
 ```bash
-pip install pyproject
+pip install pylookyloomonitoring
 ```
 
 ## Usage
 
 ### Command line
 
-You can use the `client` command to do a thing:
+You can use the `lookyloo_monitor`:
 
 ```bash
+usage: lookyloo_monitor [-h] --url URL (--monitor_url MONITOR_URL | --compare COMPARE)
+
+Talk to a Lookyloo Monitoring instance.
+
+options:
+  -h, --help            show this help message and exit
+  --url URL             URL of the instance.
+  --monitor_url MONITOR_URL
+                        URL to monitor. It will be monitered hourly.
+  --compare COMPARE     UUID of the monitoring.
 ```
 
 ### Library

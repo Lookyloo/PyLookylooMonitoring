@@ -4,11 +4,11 @@ API reference
 .. toctree::
    :maxdepth: 2
 
-.. automodule:: pyproject
+.. automodule:: pylookyloomonitoring
    :members:
 
-PyProject
----------
+PyLookylooMonitoring
+--------------------
 
-.. autoclass:: PyProject
+.. autoclass:: PyLookylooMonitoring
    :members:

@@ -27,7 +27,7 @@ classifiers = [
 include = ['README.md']
 
 [tool.poetry.scripts]
-client = 'pylookyloomonitoring:main'
+lookyloo_monitor= 'pylookyloomonitoring:main'
 
 [tool.poetry.dependencies]
 python = "^3.8"
