@@ -33,6 +33,13 @@ class CaptureSettings(TypedDict, total=False):
     listing: Optional[bool]
 
 
+class CompareSettings(TypedDict, total=False):
+    '''The settings that can be passed to the compare method on lookyloo side to filter out some differences'''
+
+    ressources_ignore_domains: Optional[List[str]]
+    ressources_ignore_regexes: Optional[List[str]]
+
+
 class MonitorSettings(TypedDict, total=False):
     '''The settings for the capture we want to monitor'''
 
@@ -40,6 +47,7 @@ class MonitorSettings(TypedDict, total=False):
     frequency: str
     expire_at: Optional[float]
     collection: Optional[str]
+    compare_settings: Optional[CompareSettings]
 
 
 class MonitoringInstanceSettings(TypedDict):
@@ -133,13 +141,16 @@ class PyLookylooMonitoring():
         return r.json()
 
     def monitor(self, capture_settings: CaptureSettings, /, frequency: str, *,
-                expire_at: Optional[Union[datetime, str, int, float]]=None, collection: Optional[str]=None) -> str:
+                expire_at: Optional[Union[datetime, str, int, float]]=None,
+                collection: Optional[str]=None,
+                compare_settings: Optional[CompareSettings]=None) -> str:
         """Add a new capture to monitor.
 
         :param capture_settings: The settings of the capture
         :param frequency: The frequency of the monitoring
         :param expire_at: When the monitoring should expire.
         :param collection: The collection the monitored capture is part of.
+        :param compare_settings: The comparison settings.
         """
         to_post: MonitorSettings = {
             'capture_settings': capture_settings,
@@ -156,6 +167,9 @@ class PyLookylooMonitoring():
             to_post['expire_at'] = _expire
         if collection:
             to_post['collection'] = collection
+
+        if compare_settings:
+            to_post['compare_settings'] = compare_settings
 
         r = self.session.post(urljoin(self.root_url, 'monitor'), json=to_post)
         return r.json()
