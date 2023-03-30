@@ -4,7 +4,7 @@
 from importlib.metadata import version
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Optional, List, Tuple, Any, Union, TypedDict
+from typing import Dict, Optional, List, Any, Union, TypedDict
 from urllib.parse import urljoin, urlparse
 
 import requests
@@ -100,7 +100,7 @@ class PyLookylooMonitoring():
         r = self.session.get(urljoin(self.root_url, str(Path('json', 'collections'))))
         return r.json()
 
-    def monitored(self, collection: Optional[str]=None) -> List[Tuple[str, Dict[str, Tuple[bool, str]]]]:
+    def monitored(self, collection: Optional[str]=None) -> List[Dict[str, Any]]:
         """Get the list of what is currently monitored.
 
         :param collection: Filter by collection
@@ -112,7 +112,7 @@ class PyLookylooMonitoring():
         r = self.session.get(urljoin(self.root_url, _path))
         return r.json()
 
-    def expired(self, collection: Optional[str]=None) -> List[Tuple[str, Dict[str, Tuple[bool, str]]]]:
+    def expired(self, collection: Optional[str]=None) -> List[Dict[str, Any]]:
         """Get the list of the capture we're not monitoring anymore.
 
         :param collection: Filter by collection
