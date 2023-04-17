@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import logging
+
 from importlib.metadata import version
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, Optional, List, Any, Union, TypedDict
 from urllib.parse import urljoin, urlparse
@@ -80,6 +82,7 @@ class PyLookylooMonitoring():
             self.root_url += '/'
         self.session = requests.session()
         self.session.headers['user-agent'] = useragent if useragent else f'PyLookylooMonitoring / {version("pylookyloomonitoring")}'
+        self.logger = logging.getLogger(f'{self.__class__.__name__}')
 
     @property
     def is_up(self) -> bool:
@@ -163,7 +166,8 @@ class PyLookylooMonitoring():
                 _expire = expire_at.timestamp()
             if _expire < datetime.now().timestamp():
                 # The expiration time is in the past.
-                raise TimeError('Expiration time in the past.')
+                self.logger.warning(f'Expiration time in the past ({expire_at}), forcing it to tomorrow.')
+                _expire = (datetime.now() + timedelta(hours=24)).timestamp()
             to_post['expire_at'] = _expire
         if collection:
             to_post['collection'] = collection
