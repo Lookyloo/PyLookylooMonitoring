@@ -42,6 +42,12 @@ class CompareSettings(TypedDict, total=False):
     ressources_ignore_regexes: Optional[List[str]]
 
 
+class NotificationSettings(TypedDict, total=False):
+    '''The notification settings for a monitoring'''
+
+    email: str
+
+
 class MonitorSettings(TypedDict, total=False):
     '''The settings for the capture we want to monitor'''
 
@@ -50,6 +56,7 @@ class MonitorSettings(TypedDict, total=False):
     expire_at: Optional[float]
     collection: Optional[str]
     compare_settings: Optional[CompareSettings]
+    notification: Optional[NotificationSettings]
 
 
 class MonitoringInstanceSettings(TypedDict):
@@ -146,7 +153,8 @@ class PyLookylooMonitoring():
     def monitor(self, capture_settings: CaptureSettings, /, frequency: str, *,
                 expire_at: Optional[Union[datetime, str, int, float]]=None,
                 collection: Optional[str]=None,
-                compare_settings: Optional[CompareSettings]=None) -> str:
+                compare_settings: Optional[CompareSettings]=None,
+                notification: Optional[NotificationSettings]) -> str:
         """Add a new capture to monitor.
 
         :param capture_settings: The settings of the capture
@@ -154,6 +162,7 @@ class PyLookylooMonitoring():
         :param expire_at: When the monitoring should expire.
         :param collection: The collection the monitored capture is part of.
         :param compare_settings: The comparison settings.
+        :param notification: The notification settings.
         """
         to_post: MonitorSettings = {
             'capture_settings': capture_settings,
@@ -171,9 +180,10 @@ class PyLookylooMonitoring():
             to_post['expire_at'] = _expire
         if collection:
             to_post['collection'] = collection
-
         if compare_settings:
             to_post['compare_settings'] = compare_settings
+        if notification:
+            to_post['notification'] = notification
 
         r = self.session.post(urljoin(self.root_url, 'monitor'), json=to_post)
         return r.json()
