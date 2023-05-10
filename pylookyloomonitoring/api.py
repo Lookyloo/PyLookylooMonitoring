@@ -154,7 +154,7 @@ class PyLookylooMonitoring():
                 expire_at: Optional[Union[datetime, str, int, float]]=None,
                 collection: Optional[str]=None,
                 compare_settings: Optional[CompareSettings]=None,
-                notification: Optional[NotificationSettings]) -> str:
+                notification: Optional[NotificationSettings]=None) -> str:
         """Add a new capture to monitor.
 
         :param capture_settings: The settings of the capture
