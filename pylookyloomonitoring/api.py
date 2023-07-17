@@ -160,6 +160,14 @@ class PyLookylooMonitoring():
         r = self.session.get(urljoin(self.root_url, _path))
         return r.json()
 
+    def settings_monitor(self, uuid: str) -> MonitorSettings:
+        """Get the settings of a specific monitoring.
+
+        :param uuid: The UUID we want the settings of.
+        """
+        r = self.session.get(urljoin(self.root_url, str(Path('settings_monitor', uuid))))
+        return r.json()
+
     def stop_monitor(self, uuid: str) -> Union[bool, Dict[str, str]]:
         """Stop monitoring a specific capture
 
@@ -186,6 +194,37 @@ class PyLookylooMonitoring():
         :param uuid: the UUID we want to get the changes
         """
         r = self.session.get(urljoin(self.root_url, str(Path('json', 'changes', uuid))))
+        return r.json()
+
+    def update_monitor(self, monitor_uuid: str,
+                       capture_settings: Optional[CaptureSettings]=None,
+                       frequency: Optional[str]=None,
+                       expire_at: Optional[Union[datetime, str, int, float]]=None,
+                       collection: Optional[str]=None,
+                       compare_settings: Optional[CompareSettings]=None,
+                       notification: Optional[NotificationSettings]=None) -> str:
+        to_post: MonitorSettings = {}
+        if capture_settings:
+            to_post['capture_settings'] = capture_settings
+        if frequency:
+            to_post['frequency'] = frequency
+        if expire_at:
+            if isinstance(expire_at, (str, int, float)):
+                _expire = float(expire_at)
+            if isinstance(expire_at, datetime):
+                _expire = expire_at.timestamp()
+            if _expire < datetime.now().timestamp():
+                # The expiration time is in the past.
+                self.logger.warning(f'Expiration time in the past ({expire_at}), forcing it to tomorrow.')
+                _expire = (datetime.now() + timedelta(hours=24)).timestamp()
+            to_post['expire_at'] = _expire
+        if collection:
+            to_post['collection'] = collection
+        if compare_settings:
+            to_post['compare_settings'] = compare_settings
+        if notification:
+            to_post['notification'] = notification
+        r = self.session.post(urljoin(self.root_url, str(Path('update_monitor', monitor_uuid))), json=to_post)
         return r.json()
 
     def monitor(self, capture_settings: CaptureSettings, /, frequency: str, *,

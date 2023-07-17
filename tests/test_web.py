@@ -25,6 +25,22 @@ class TestBasic(unittest.TestCase):
         self.assertTrue('max_captures' in settings, settings)
         self.assertTrue('force_expire' in settings, settings)
 
+    def test_monitor_update(self) -> None:
+        capture_settings: CaptureSettings = {'url': 'https://circl.lu'}
+        monitor_uuid = self.client.monitor(capture_settings,
+                                           frequency='hourly',
+                                           expire_at=datetime.now() + timedelta(hours=2),
+                                           collection="testing")
+        monitor_uuid = self.client.update_monitor(monitor_uuid, frequency='daily')
+        monitored = self.client.monitored('testing')
+        for entry in monitored:
+            if entry['uuid'] == monitor_uuid:
+                settings = self.client.settings_monitor(monitor_uuid)
+                self.assertEqual(settings['frequency'], 'daily', settings)
+                break
+        else:
+            raise Exception(f'Unable to find {monitor_uuid}.')
+
     def test_monitor_expire(self) -> None:
         capture_settings: CaptureSettings = {'url': 'https://circl.lu'}
         monitor_uuid = self.client.monitor(capture_settings,
@@ -35,10 +51,9 @@ class TestBasic(unittest.TestCase):
         self.assertTrue('testing' in collections)
         monitored = self.client.monitored('testing')
         self.assertTrue(monitor_uuid in [entry['uuid'] for entry in monitored], monitored)
-        time.sleep(15)
         stop_monitored = self.client.stop_monitor(monitor_uuid)
         self.assertTrue(stop_monitored)
         # Need to wait for update_monitoring_queue to run
-        time.sleep(15)
+        time.sleep(10)
         expired = self.client.expired('testing')
         self.assertTrue(monitor_uuid in [entry['uuid'] for entry in expired], expired)
