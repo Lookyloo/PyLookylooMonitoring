@@ -13,6 +13,7 @@ class TestBasic(unittest.TestCase):
 
     def setUp(self):
         self.client = PyLookylooMonitoring(root_url="http://127.0.0.1:5200")
+        self.client.init_apikey('admin', 'admin')
 
     def test_up(self):
         self.assertTrue(self.client.is_up)

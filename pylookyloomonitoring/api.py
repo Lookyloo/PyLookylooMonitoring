@@ -74,6 +74,10 @@ class TimeError(PyLookylooMonitoringException):
     ...
 
 
+class AuthError(PyLookylooMonitoringException):
+    ...
+
+
 class PyLookylooMonitoring():
 
     def __init__(self, root_url: str, useragent: Optional[str]=None):
@@ -90,6 +94,28 @@ class PyLookylooMonitoring():
         self.session = requests.session()
         self.session.headers['user-agent'] = useragent if useragent else f'PyLookylooMonitoring / {version("pylookyloomonitoring")}'
         self.logger = logging.getLogger(f'{self.__class__.__name__}')
+        self.apikey: Optional[str] = None
+
+    def get_apikey(self, username: str, password: str) -> Dict[str, str]:
+        '''Get the API key for the given user.'''
+        to_post = {'username': username, 'password': password}
+        r = self.session.post(urljoin(self.root_url, str(Path('json', 'get_token'))), json=to_post)
+        return r.json()
+
+    def init_apikey(self, username: Optional[str]=None, password: Optional[str]=None, apikey: Optional[str]=None):
+        '''Init the API key for the current session. All the requests against the monitoring instance after this call will be authenticated.'''
+        if apikey:
+            self.apikey = apikey
+        elif username and password:
+            t = self.get_apikey(username, password)
+            if 'authkey' in t:
+                self.apikey = t['authkey']
+        else:
+            raise AuthError('Username and password required')
+        if self.apikey:
+            self.session.headers['Authorization'] = self.apikey
+        else:
+            raise AuthError('Unable to initialize API key')
 
     @property
     def is_up(self) -> bool:
@@ -139,7 +165,19 @@ class PyLookylooMonitoring():
 
         :param uuid: the UUID we want to expire
         """
+        if not self.apikey:
+            raise AuthError('You need to initialize the apikey to use this method (see init_apikey)')
         r = self.session.post(urljoin(self.root_url, str(Path('stop_monitor', uuid))))
+        return r.json()
+
+    def start_monitor(self, uuid: str) -> bool:
+        """(re)Start monitoring a specific capture
+
+        :param uuid: the UUID we want to (re)start to monitor
+        """
+        if not self.apikey:
+            raise AuthError('You need to initialize the apikey to use this method (see init_apikey)')
+        r = self.session.post(urljoin(self.root_url, str(Path('start_monitor', uuid))))
         return r.json()
 
     def changes(self, uuid: str) -> Dict[str, Any]:
