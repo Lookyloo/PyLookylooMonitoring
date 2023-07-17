@@ -35,6 +35,7 @@ class TestBasic(unittest.TestCase):
         self.assertTrue('testing' in collections)
         monitored = self.client.monitored('testing')
         self.assertTrue(monitor_uuid in [entry['uuid'] for entry in monitored], monitored)
+        time.sleep(15)
         stop_monitored = self.client.stop_monitor(monitor_uuid)
         self.assertTrue(stop_monitored)
         # Need to wait for update_monitoring_queue to run

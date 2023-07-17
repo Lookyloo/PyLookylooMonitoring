@@ -160,7 +160,7 @@ class PyLookylooMonitoring():
         r = self.session.get(urljoin(self.root_url, _path))
         return r.json()
 
-    def stop_monitor(self, uuid: str) -> bool:
+    def stop_monitor(self, uuid: str) -> Union[bool, Dict[str, str]]:
         """Stop monitoring a specific capture
 
         :param uuid: the UUID we want to expire
@@ -170,7 +170,7 @@ class PyLookylooMonitoring():
         r = self.session.post(urljoin(self.root_url, str(Path('stop_monitor', uuid))))
         return r.json()
 
-    def start_monitor(self, uuid: str) -> bool:
+    def start_monitor(self, uuid: str) -> Union[bool, Dict[str, str]]:
         """(re)Start monitoring a specific capture
 
         :param uuid: the UUID we want to (re)start to monitor
