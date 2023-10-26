@@ -43,6 +43,8 @@ class CompareSettings(TypedDict, total=False):
 
     ignore_ips: Optional[bool]
 
+    skip_failed_captures: Optional[bool]
+
 
 class NotificationSettings(TypedDict, total=False):
     '''The notification settings for a monitoring'''
