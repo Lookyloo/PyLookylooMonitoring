@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 import time
 import unittest
@@ -11,15 +10,15 @@ from pylookyloomonitoring import PyLookylooMonitoring, CaptureSettings
 
 class TestBasic(unittest.TestCase):
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.client = PyLookylooMonitoring(root_url="http://127.0.0.1:5200")
         self.client.init_apikey('admin', 'admin')
 
-    def test_up(self):
+    def test_up(self) -> None:
         self.assertTrue(self.client.is_up)
         self.assertTrue(self.client.redis_up())
 
-    def test_instance_settings(self):
+    def test_instance_settings(self) -> None:
         settings = self.client.instance_settings()
         self.assertTrue('min_frequency' in settings, settings)
         self.assertTrue('max_captures' in settings, settings)

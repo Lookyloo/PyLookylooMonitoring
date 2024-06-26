@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
+from __future__ import annotations
 
 import logging
 
 from importlib.metadata import version
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, Optional, List, Any, Union, TypedDict
+from typing import TypedDict, Any
 from urllib.parse import urljoin, urlparse
 
 import requests
@@ -15,35 +16,35 @@ import requests
 class CaptureSettings(TypedDict, total=False):
     '''The capture settings that can be passed to Lookyloo.'''
 
-    url: Optional[str]
-    document_name: Optional[str]
-    document: Optional[str]
-    browser: Optional[str]
-    device_name: Optional[str]
-    user_agent: Optional[str]
-    proxy: Optional[Union[str, Dict[str, str]]]
-    general_timeout_in_sec: Optional[int]
-    cookies: Optional[List[Dict[str, Any]]]
-    headers: Optional[Union[str, Dict[str, str]]]
-    http_credentials: Optional[Dict[str, int]]
-    viewport: Optional[Dict[str, int]]
-    referer: Optional[str]
-    force: Optional[bool]
-    recapture_interval: Optional[int]
-    priority: Optional[int]
+    url: str | None
+    document_name: str | None
+    document: str | None
+    browser: str | None
+    device_name: str | None
+    user_agent: str | None
+    proxy: str | dict[str, str] | None
+    general_timeout_in_sec: int | None
+    cookies: list[dict[str, Any]] | None
+    headers: str | dict[str, str] | None
+    http_credentials: dict[str, int] | None
+    viewport: dict[str, int] | None
+    referer: str | None
+    force: bool | None
+    recapture_interval: int | None
+    priority: int | None
 
-    listing: Optional[bool]
+    listing: bool | None
 
 
 class CompareSettings(TypedDict, total=False):
     '''The settings that can be passed to the compare method on lookyloo side to filter out some differences'''
 
-    ressources_ignore_domains: Optional[List[str]]
-    ressources_ignore_regexes: Optional[List[str]]
+    ressources_ignore_domains: list[str] | None
+    ressources_ignore_regexes: list[str] | None
 
-    ignore_ips: Optional[bool]
+    ignore_ips: bool | None
 
-    skip_failed_captures: Optional[bool]
+    skip_failed_captures: bool | None
 
 
 class NotificationSettings(TypedDict, total=False):
@@ -57,10 +58,10 @@ class MonitorSettings(TypedDict, total=False):
 
     capture_settings: CaptureSettings
     frequency: str
-    expire_at: Optional[float]
-    collection: Optional[str]
-    compare_settings: Optional[CompareSettings]
-    notification: Optional[NotificationSettings]
+    expire_at: float | None
+    collection: str | None
+    compare_settings: CompareSettings | None
+    notification: NotificationSettings | None
 
 
 class MonitoringInstanceSettings(TypedDict):
@@ -84,8 +85,8 @@ class AuthError(PyLookylooMonitoringException):
 
 class PyLookylooMonitoring():
 
-    def __init__(self, root_url: str, useragent: Optional[str]=None,
-                 *, proxies: Optional[Dict[str, str]]=None):
+    def __init__(self, root_url: str, useragent: str | None=None,
+                 *, proxies: dict[str, str] | None=None):
         '''Query a specific instance.
 
         :param root_url: URL of the instance to query.
@@ -103,15 +104,15 @@ class PyLookylooMonitoring():
         if proxies:
             self.session.proxies.update(proxies)
         self.logger = logging.getLogger(f'{self.__class__.__name__}')
-        self.apikey: Optional[str] = None
+        self.apikey: str | None = None
 
-    def get_apikey(self, username: str, password: str) -> Dict[str, str]:
+    def get_apikey(self, username: str, password: str) -> dict[str, str]:
         '''Get the API key for the given user.'''
         to_post = {'username': username, 'password': password}
         r = self.session.post(urljoin(self.root_url, str(Path('json', 'get_token'))), json=to_post)
         return r.json()
 
-    def init_apikey(self, username: Optional[str]=None, password: Optional[str]=None, apikey: Optional[str]=None):
+    def init_apikey(self, username: str | None=None, password: str | None=None, apikey: str | None=None) -> None:
         '''Init the API key for the current session. All the requests against the monitoring instance after this call will be authenticated.'''
         if apikey:
             self.apikey = apikey
@@ -135,17 +136,17 @@ class PyLookylooMonitoring():
             return False
         return r.status_code == 200
 
-    def redis_up(self) -> Dict:
+    def redis_up(self) -> dict[str, Any]:
         '''Check if redis is up and running'''
         r = self.session.get(urljoin(self.root_url, 'redis_up'))
         return r.json()
 
-    def collections(self) -> List[str]:
+    def collections(self) -> list[str]:
         """Get all the collections"""
         r = self.session.get(urljoin(self.root_url, str(Path('json', 'collections'))))
         return r.json()
 
-    def monitored(self, collection: Optional[str]=None) -> List[Dict[str, Any]]:
+    def monitored(self, collection: str | None=None) -> list[dict[str, Any]]:
         """Get the list of what is currently monitored.
 
         :param collection: Filter by collection
@@ -157,7 +158,7 @@ class PyLookylooMonitoring():
         r = self.session.get(urljoin(self.root_url, _path))
         return r.json()
 
-    def expired(self, collection: Optional[str]=None) -> List[Dict[str, Any]]:
+    def expired(self, collection: str | None=None) -> list[dict[str, Any]]:
         """Get the list of the capture we're not monitoring anymore.
 
         :param collection: Filter by collection
@@ -177,7 +178,7 @@ class PyLookylooMonitoring():
         r = self.session.get(urljoin(self.root_url, str(Path('settings_monitor', uuid))))
         return r.json()
 
-    def stop_monitor(self, uuid: str) -> Union[bool, Dict[str, str]]:
+    def stop_monitor(self, uuid: str) -> bool | dict[str, str]:
         """Stop monitoring a specific capture
 
         :param uuid: the UUID we want to expire
@@ -187,7 +188,7 @@ class PyLookylooMonitoring():
         r = self.session.post(urljoin(self.root_url, str(Path('stop_monitor', uuid))))
         return r.json()
 
-    def start_monitor(self, uuid: str) -> Union[bool, Dict[str, str]]:
+    def start_monitor(self, uuid: str) -> bool | dict[str, str]:
         """(re)Start monitoring a specific capture
 
         :param uuid: the UUID we want to (re)start to monitor
@@ -197,7 +198,7 @@ class PyLookylooMonitoring():
         r = self.session.post(urljoin(self.root_url, str(Path('start_monitor', uuid))))
         return r.json()
 
-    def changes(self, uuid: str) -> Dict[str, Any]:
+    def changes(self, uuid: str) -> dict[str, Any]:
         """Get the changes for a specific monitored capture.
 
         :param uuid: the UUID we want to get the changes
@@ -206,12 +207,12 @@ class PyLookylooMonitoring():
         return r.json()
 
     def update_monitor(self, monitor_uuid: str,
-                       capture_settings: Optional[CaptureSettings]=None,
-                       frequency: Optional[str]=None,
-                       expire_at: Optional[Union[datetime, str, int, float]]=None,
-                       collection: Optional[str]=None,
-                       compare_settings: Optional[CompareSettings]=None,
-                       notification: Optional[NotificationSettings]=None) -> str:
+                       capture_settings: CaptureSettings | None=None,
+                       frequency: str | None=None,
+                       expire_at: datetime | str | int | float | None=None,
+                       collection: str | None=None,
+                       compare_settings: CompareSettings | None=None,
+                       notification: NotificationSettings | None=None) -> str:
         to_post: MonitorSettings = {}
         if capture_settings:
             to_post['capture_settings'] = capture_settings
@@ -237,10 +238,10 @@ class PyLookylooMonitoring():
         return r.json()
 
     def monitor(self, capture_settings: CaptureSettings, /, frequency: str, *,
-                expire_at: Optional[Union[datetime, str, int, float]]=None,
-                collection: Optional[str]=None,
-                compare_settings: Optional[CompareSettings]=None,
-                notification: Optional[NotificationSettings]=None) -> str:
+                expire_at: datetime | str | int | float | None=None,
+                collection: str | None=None,
+                compare_settings: CompareSettings | None=None,
+                notification: NotificationSettings | None=None) -> str:
         """Add a new capture to monitor.
 
         :param capture_settings: The settings of the capture
