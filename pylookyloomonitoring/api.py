@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import TypedDict, Any
 from urllib.parse import urljoin, urlparse
 
+import dateparser
 import requests
 
 
@@ -219,15 +220,20 @@ class PyLookylooMonitoring():
         if frequency:
             to_post['frequency'] = frequency
         if expire_at:
-            if isinstance(expire_at, (str, int, float)):
+            if isinstance(expire_at, str):
+                if dt_expire := dateparser.parse(expire_at):
+                    _expire = dt_expire.timestamp()
+            if isinstance(expire_at, (int, float)):
                 _expire = float(expire_at)
             if isinstance(expire_at, datetime):
                 _expire = expire_at.timestamp()
-            if _expire < datetime.now().timestamp():
-                # The expiration time is in the past.
-                self.logger.warning(f'Expiration time in the past ({expire_at}), forcing it to tomorrow.')
-                _expire = (datetime.now() + timedelta(hours=24)).timestamp()
-            to_post['expire_at'] = _expire
+
+            if _expire:
+                if _expire < datetime.now().timestamp():
+                    # The expiration time is in the past.
+                    self.logger.warning(f'Expiration time in the past ({expire_at}), forcing it to tomorrow.')
+                    _expire = (datetime.now() + timedelta(hours=24)).timestamp()
+                to_post['expire_at'] = _expire
         if collection:
             to_post['collection'] = collection
         if compare_settings:
