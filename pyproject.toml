@@ -1,14 +1,26 @@
-[tool.poetry]
+[project]
 name = "pylookyloomonitoring"
-version = "1.1.4"
+version = "1.1.5"
 description = "Python API to connect to lookyloo monitoring"
-authors = ["Raphaël Vinot <raphael.vinot@circl.lu>"]
+authors = [
+    {name="Raphaël Vinot", email="raphael.vinot@circl.lu"}
+]
 license = "BSD-3-Clause"
+readme = "README.md"
+requires-python = ">=3.9"
+
+dynamic = [ "classifiers" ]
+
+dependencies = [
+    "requests (>=2.32.3)",
+    "dateparser (>=1.2.1)"
+]
+
+[project.urls]
 repository = "https://github.com/Lookyloo/PyLookylooMonitoring"
 documentation = "https://pylookyloomonitoring.readthedocs.io/en/latest/index.html"
 
-readme = "README.md"
-
+[tool.poetry]
 classifiers = [
     'License :: OSI Approved :: BSD License',
     'Development Status :: 5 - Production/Stable',
@@ -17,44 +29,23 @@ classifiers = [
     'Intended Audience :: Science/Research',
     'Intended Audience :: Telecommunications Industry',
     'Intended Audience :: Information Technology',
-    'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.8',
-    'Programming Language :: Python :: 3.9',
-    'Programming Language :: Python :: 3.10',
-    'Programming Language :: Python :: 3.11',
-    'Programming Language :: Python :: 3.12',
     'Topic :: Security',
     'Topic :: Internet',
 ]
 
-[tool.poetry.scripts]
+[project.scripts]
 lookyloo_monitor= 'pylookyloomonitoring:main'
 
-[tool.poetry.dependencies]
-python = "^3.8"
-requests = "^2.32.3"
-Sphinx = [
-    {version = "<7.2", python = "<3.9", optional = true},
-    {version = "^7.2", python = ">=3.9,<3.10", optional = true},
-    {version = "^8", python = ">=3.10", optional = true}
-]
-dateparser = "^1.2.0"
-
-[tool.poetry.extras]
-docs = ["Sphinx"]
+[project.optional-dependencies]
+docs = ["Sphinx (>=8.2.3) ; python_version >= \"3.11\""]
 
 [tool.poetry.group.dev.dependencies]
-pylint = "^3.2.6"
-mypy = "^1.11.1"
-types-requests = "^2.32.0.20240712"
-ipython = [
-    {version = "<8.13.0", python = "<3.9"},
-    {version = "^8.18.0", python = ">=3.9"},
-    {version = "^8.19.0", python = ">=3.10"}
-]
-pytest = "^8.3.2"
-types-dateparser = "^1.2.0.20240420"
+pylint = "^3.3.7"
+mypy = "^1.15.0"
+types-requests = "^2.32.0.20250328"
+pytest = "^8.3.5"
+types-dateparser = "^1.2.0.20250408"
 
 [build-system]
-requires = ["poetry_core"]
+requires = ["poetry-core>=2.0"]
 build-backend = "poetry.core.masonry.api"
