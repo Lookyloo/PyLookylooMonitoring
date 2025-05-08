@@ -132,7 +132,7 @@ class PyLookylooMonitoring():
     def is_up(self) -> bool:
         '''Test if the given instance is accessible'''
         try:
-            r = self.session.head(self.root_url)
+            r = self.session.head(self.root_url, timeout=2)
         except requests.exceptions.ConnectionError:
             return False
         return r.status_code == 200
