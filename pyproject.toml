@@ -1,19 +1,19 @@
 [project]
 name = "pylookyloomonitoring"
-version = "1.1.6"
+version = "1.2.0"
 description = "Python API to connect to lookyloo monitoring"
 authors = [
     {name="Raphaël Vinot", email="raphael.vinot@circl.lu"}
 ]
 license = "BSD-3-Clause"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.9.2"
 
 dynamic = [ "classifiers" ]
 
 dependencies = [
-    "requests (>=2.32.4)",
-    "dateparser (>=1.2.1)"
+    "requests (>=2.32.5)",
+    "dateparser (>=1.2.2)"
 ]
 
 [project.urls]
@@ -40,11 +40,11 @@ lookyloo_monitor= 'pylookyloomonitoring:main'
 docs = ["Sphinx (>=8.2.3) ; python_version >= \"3.11\""]
 
 [tool.poetry.group.dev.dependencies]
-pylint = "^3.3.7"
-mypy = "^1.16.0"
-types-requests = "^2.32.0.20250602"
-pytest = "^8.4.0"
-types-dateparser = "^1.2.0.20250601"
+pylint = "^3.3.8"
+mypy = "^1.18.2"
+types-requests = "^2.32.4.20250913"
+pytest = "^8.4.2"
+types-dateparser = "^1.2.2.20250809"
 
 [build-system]
 requires = ["poetry-core>=2.0"]
