@@ -40,7 +40,7 @@ lookyloo_monitor= 'pylookyloomonitoring:main'
 docs = ["Sphinx (>=8.2.3) ; python_version >= \"3.11\""]
 
 [tool.poetry.group.dev.dependencies]
-pylint = "^3.3.8"
+pylint = "^3.3.9"
 mypy = "^1.18.2"
 types-requests = "^2.32.4.20250913"
 pytest = "^8.4.2"
