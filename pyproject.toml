@@ -7,7 +7,7 @@ authors = [
 ]
 license = "BSD-3-Clause"
 readme = "README.md"
-requires-python = ">=3.9.2"
+requires-python = ">=3.10"
 
 dynamic = [ "classifiers" ]
 
@@ -40,10 +40,10 @@ lookyloo_monitor= 'pylookyloomonitoring:main'
 docs = ["Sphinx (>=8.2.3) ; python_version >= \"3.11\""]
 
 [tool.poetry.group.dev.dependencies]
-pylint = "^3.3.8"
+pylint = "^4.0.3"
 mypy = "^1.18.2"
 types-requests = "^2.32.4.20250913"
-pytest = "^8.4.2"
+pytest = "^9.0.1"
 types-dateparser = "^1.2.2.20250809"
 
 [build-system]
