@@ -37,11 +37,11 @@ classifiers = [
 lookyloo_monitor= 'pylookyloomonitoring:main'
 
 [project.optional-dependencies]
-docs = ["Sphinx (>=8.2.3) ; python_version >= \"3.11\""]
+docs = ["Sphinx (>=9.0.1) ; python_version >= \"3.11\""]
 
 [tool.poetry.group.dev.dependencies]
-pylint = "^4.0.3"
-mypy = "^1.18.2"
+pylint = "^4.0.4"
+mypy = "^1.19.0"
 types-requests = "^2.32.4.20250913"
 pytest = "^9.0.1"
 types-dateparser = "^1.2.2.20250809"
