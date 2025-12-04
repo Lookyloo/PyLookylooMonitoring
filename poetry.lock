@@ -956,15 +956,15 @@ files = [
 
 [[package]]
 name = "sphinx"
-version = "9.0.1"
+version = "9.0.2"
 description = "Python documentation generator"
 optional = true
 python-versions = ">=3.11"
 groups = ["main"]
 markers = "python_version >= \"3.11\" and extra == \"docs\""
 files = [
-    {file = "sphinx-9.0.1-py3-none-any.whl", hash = "sha256:5a9506b709d6bd3d4c3f142b5b58801c202837b54875727e3adcba98d4839735"},
-    {file = "sphinx-9.0.1.tar.gz", hash = "sha256:c820d856657ce7cd41ce2c097f478ac3d7ddad9779ad83de4f0136a81ff388fd"},
+    {file = "sphinx-9.0.2-py3-none-any.whl", hash = "sha256:e6d773a16aa230f39a472c351e20abf07ee6d9d0fc0cc6552dfa67e35f5d14b0"},
+    {file = "sphinx-9.0.2.tar.gz", hash = "sha256:96fe90c40bff08f0a4a05f3a8f637ded4109f442088f896a0c7392973b1df913"},
 ]
 
 [package.dependencies]
