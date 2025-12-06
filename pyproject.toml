@@ -37,7 +37,7 @@ classifiers = [
 lookyloo_monitor= 'pylookyloomonitoring:main'
 
 [project.optional-dependencies]
-docs = ["Sphinx (>=9.0.1) ; python_version >= \"3.11\""]
+docs = ["Sphinx (>=9.0.4) ; python_version >= \"3.11\""]
 
 [tool.poetry.group.dev.dependencies]
 pylint = "^4.0.4"
