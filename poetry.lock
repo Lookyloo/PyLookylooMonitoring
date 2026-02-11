@@ -1162,14 +1162,14 @@ files = [
 
 [[package]]
 name = "types-dateparser"
-version = "1.2.2.20250809"
+version = "1.3.0.20260210"
 description = "Typing stubs for dateparser"
 optional = false
-python-versions = ">=3.9"
+python-versions = ">=3.10"
 groups = ["dev"]
 files = [
-    {file = "types_dateparser-1.2.2.20250809-py3-none-any.whl", hash = "sha256:f12ae46abc3085e60e16fbe55730c5acbce980cbe3b176b17b08b4cef85850ef"},
-    {file = "types_dateparser-1.2.2.20250809.tar.gz", hash = "sha256:a898f5527e6c34d213bc5d85254b8246d8b1e76239ed9243711198add0c8a29c"},
+    {file = "types_dateparser-1.3.0.20260210-py3-none-any.whl", hash = "sha256:1e482e470a4d62b4c9923a174f0796b869999cf13af7752fe2036af8930014a3"},
+    {file = "types_dateparser-1.3.0.20260210.tar.gz", hash = "sha256:bd2dd1a3f8cae9f3778ed65166f3d68fcb778b8a73ccef3cbcc08db5877fd938"},
 ]
 
 [[package]]
@@ -1254,4 +1254,4 @@ docs = ["Sphinx"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10"
-content-hash = "87cb115940f61099a6c94fe4daae42a2e164e57afe13420bb123df46ee4cb4ca"
+content-hash = "7f614edcca54c4039033eabe6db524519150898035ce8a7a78b8d95d90eb6aa7"
