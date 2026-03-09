@@ -243,7 +243,7 @@ class PyLookylooMonitoring():
         r = self.session.post(urljoin(self.root_url, str(Path('update_monitor', monitor_uuid))), json=to_post)
         return r.json()
 
-    def monitor(self, capture_settings: CaptureSettings, /, frequency: str, *,
+    def monitor(self, capture_settings: CaptureSettings | dict[str, Any], /, frequency: str, *,
                 expire_at: datetime | str | int | float | None=None,
                 collection: str | None=None,
                 compare_settings: CompareSettings | None=None,
