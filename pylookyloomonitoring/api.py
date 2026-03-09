@@ -7,7 +7,7 @@ import logging
 from importlib.metadata import version
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import TypedDict, Any
+from typing import TypedDict, Any, cast
 from urllib.parse import urljoin, urlparse
 
 import dateparser
@@ -258,7 +258,7 @@ class PyLookylooMonitoring():
         :param notification: The notification settings.
         """
         to_post: MonitorSettings = {
-            'capture_settings': capture_settings,
+            'capture_settings': cast(CaptureSettings, capture_settings),
             'frequency': frequency
         }
         if expire_at:
