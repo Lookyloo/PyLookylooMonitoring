@@ -60,6 +60,7 @@ class MonitorSettings(TypedDict, total=False):
     capture_settings: CaptureSettings
     frequency: str
     expire_at: float | None
+    never_expire: bool
     collection: str | None
     compare_settings: CompareSettings | None
     notification: NotificationSettings | None
@@ -207,10 +208,11 @@ class PyLookylooMonitoring():
         r = self.session.get(urljoin(self.root_url, str(Path('json', 'changes', uuid))))
         return r.json()
 
-    def update_monitor(self, monitor_uuid: str,
+    def update_monitor(self, monitor_uuid: str, *,
                        capture_settings: CaptureSettings | None=None,
                        frequency: str | None=None,
                        expire_at: datetime | str | int | float | None=None,
+                       never_expire: bool = False,
                        collection: str | None=None,
                        compare_settings: CompareSettings | None=None,
                        notification: NotificationSettings | None=None) -> str:
@@ -234,6 +236,8 @@ class PyLookylooMonitoring():
                     self.logger.warning(f'Expiration time in the past ({expire_at}), forcing it to tomorrow.')
                     _expire = (datetime.now() + timedelta(hours=24)).timestamp()
                 to_post['expire_at'] = _expire
+        if never_expire:
+            to_post['never_expire'] = True
         if collection:
             to_post['collection'] = collection
         if compare_settings:
@@ -245,6 +249,7 @@ class PyLookylooMonitoring():
 
     def monitor(self, capture_settings: CaptureSettings | dict[str, Any], /, frequency: str, *,
                 expire_at: datetime | str | int | float | None=None,
+                never_expire: bool=False,
                 collection: str | None=None,
                 compare_settings: CompareSettings | None=None,
                 notification: NotificationSettings | None=None) -> str:
@@ -253,13 +258,15 @@ class PyLookylooMonitoring():
         :param capture_settings: The settings of the capture
         :param frequency: The frequency of the monitoring
         :param expire_at: When the monitoring should expire.
+        :param never_expire: If True, the capture will never expire.
         :param collection: The collection the monitored capture is part of.
         :param compare_settings: The comparison settings.
         :param notification: The notification settings.
         """
         to_post: MonitorSettings = {
             'capture_settings': cast(CaptureSettings, capture_settings),
-            'frequency': frequency
+            'frequency': frequency,
+            'never_expire': never_expire
         }
         if expire_at:
             if isinstance(expire_at, (str, int, float)):
