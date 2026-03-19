@@ -5,65 +5,14 @@ from __future__ import annotations
 import logging
 
 from importlib.metadata import version
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
-from typing import TypedDict, Any, cast
+from typing import TypedDict, Any
 from urllib.parse import urljoin, urlparse
 
-import dateparser
 import requests
 
-
-class CaptureSettings(TypedDict, total=False):
-    '''The capture settings that can be passed to Lookyloo.'''
-
-    url: str | None
-    document_name: str | None
-    document: str | None
-    browser: str | None
-    device_name: str | None
-    user_agent: str | None
-    proxy: str | dict[str, str] | None
-    general_timeout_in_sec: int | None
-    cookies: list[dict[str, Any]] | None
-    headers: str | dict[str, str] | None
-    http_credentials: dict[str, int] | None
-    viewport: dict[str, int] | None
-    referer: str | None
-    force: bool | None
-    recapture_interval: int | None
-    priority: int | None
-
-    listing: bool | None
-
-
-class CompareSettings(TypedDict, total=False):
-    '''The settings that can be passed to the compare method on lookyloo side to filter out some differences'''
-
-    ressources_ignore_domains: list[str] | None
-    ressources_ignore_regexes: list[str] | None
-
-    ignore_ips: bool | None
-
-    skip_failed_captures: bool | None
-
-
-class NotificationSettings(TypedDict, total=False):
-    '''The notification settings for a monitoring'''
-
-    email: str
-
-
-class MonitorSettings(TypedDict, total=False):
-    '''The settings for the capture we want to monitor'''
-
-    capture_settings: CaptureSettings
-    frequency: str
-    expire_at: float | None
-    never_expire: bool
-    collection: str | None
-    compare_settings: CompareSettings | None
-    notification: NotificationSettings | None
+from lookyloo_models import LookylooCaptureSettings, CompareSettings, NotificationSettings, MonitorCaptureSettings
 
 
 class MonitoringInstanceSettings(TypedDict):
@@ -172,13 +121,13 @@ class PyLookylooMonitoring():
         r = self.session.get(urljoin(self.root_url, _path))
         return r.json()
 
-    def settings_monitor(self, uuid: str) -> MonitorSettings:
+    def settings_monitor(self, uuid: str) -> MonitorCaptureSettings:
         """Get the settings of a specific monitoring.
 
         :param uuid: The UUID we want the settings of.
         """
         r = self.session.get(urljoin(self.root_url, str(Path('settings_monitor', uuid))))
-        return r.json()
+        return MonitorCaptureSettings(**r.json())
 
     def stop_monitor(self, uuid: str) -> bool | dict[str, str]:
         """Stop monitoring a specific capture
@@ -209,50 +158,51 @@ class PyLookylooMonitoring():
         return r.json()
 
     def update_monitor(self, monitor_uuid: str, *,
-                       capture_settings: CaptureSettings | None=None,
+                       capture_settings: LookylooCaptureSettings | dict[str, Any] | None=None,
                        frequency: str | None=None,
                        expire_at: datetime | str | int | float | None=None,
                        never_expire: bool = False,
                        collection: str | None=None,
-                       compare_settings: CompareSettings | None=None,
-                       notification: NotificationSettings | None=None) -> str:
-        to_post: MonitorSettings = {}
-        if capture_settings:
-            to_post['capture_settings'] = capture_settings
-        if frequency:
-            to_post['frequency'] = frequency
-        if expire_at:
-            if isinstance(expire_at, str):
-                if dt_expire := dateparser.parse(expire_at):
-                    _expire = dt_expire.timestamp()
-            if isinstance(expire_at, (int, float)):
-                _expire = float(expire_at)
-            if isinstance(expire_at, datetime):
-                _expire = expire_at.timestamp()
+                       compare_settings: CompareSettings | dict[str, Any] | None=None,
+                       notification: NotificationSettings | dict[str, Any] | None=None) -> str:
 
-            if _expire:
-                if _expire < datetime.now().timestamp():
-                    # The expiration time is in the past.
-                    self.logger.warning(f'Expiration time in the past ({expire_at}), forcing it to tomorrow.')
-                    _expire = (datetime.now() + timedelta(hours=24)).timestamp()
-                to_post['expire_at'] = _expire
-        if never_expire:
-            to_post['never_expire'] = True
-        if collection:
-            to_post['collection'] = collection
-        if compare_settings:
-            to_post['compare_settings'] = compare_settings
-        if notification:
-            to_post['notification'] = notification
-        r = self.session.post(urljoin(self.root_url, str(Path('update_monitor', monitor_uuid))), json=to_post)
+        _cs: LookylooCaptureSettings | None
+        _comp_s: CompareSettings | None
+        _ns: NotificationSettings | None
+        if isinstance(capture_settings, dict):
+            _cs = LookylooCaptureSettings(**capture_settings)
+        else:
+            _cs = capture_settings
+
+        if isinstance(compare_settings, dict):
+            _comp_s = CompareSettings(**compare_settings)
+        else:
+            _comp_s = compare_settings
+
+        if isinstance(notification, dict):
+            _ns = NotificationSettings(**notification)
+        else:
+            _ns = notification
+
+        to_post = MonitorCaptureSettings(
+            capture_settings=_cs,
+            frequency=frequency,
+            expire_at=expire_at,
+            never_expire=never_expire,
+            collection=collection,
+            compare_settings=_comp_s,
+            notification=_ns
+        )
+        r = self.session.post(urljoin(self.root_url, str(Path('update_monitor', monitor_uuid))),
+                              data=to_post.model_dump_json())
         return r.json()
 
-    def monitor(self, capture_settings: CaptureSettings | dict[str, Any], /, frequency: str, *,
+    def monitor(self, capture_settings: LookylooCaptureSettings | dict[str, Any], /, frequency: str, *,
                 expire_at: datetime | str | int | float | None=None,
                 never_expire: bool=False,
                 collection: str | None=None,
-                compare_settings: CompareSettings | None=None,
-                notification: NotificationSettings | None=None) -> str:
+                compare_settings: CompareSettings | dict[str, Any] | None=None,
+                notification: NotificationSettings | dict[str, Any] | None=None) -> str:
         """Add a new capture to monitor.
 
         :param capture_settings: The settings of the capture
@@ -263,29 +213,34 @@ class PyLookylooMonitoring():
         :param compare_settings: The comparison settings.
         :param notification: The notification settings.
         """
-        to_post: MonitorSettings = {
-            'capture_settings': cast(CaptureSettings, capture_settings),
-            'frequency': frequency,
-            'never_expire': never_expire
-        }
-        if expire_at:
-            if isinstance(expire_at, (str, int, float)):
-                _expire = float(expire_at)
-            if isinstance(expire_at, datetime):
-                _expire = expire_at.timestamp()
-            if _expire < datetime.now().timestamp():
-                # The expiration time is in the past.
-                self.logger.warning(f'Expiration time in the past ({expire_at}), forcing it to tomorrow.')
-                _expire = (datetime.now() + timedelta(hours=24)).timestamp()
-            to_post['expire_at'] = _expire
-        if collection:
-            to_post['collection'] = collection
-        if compare_settings:
-            to_post['compare_settings'] = compare_settings
-        if notification:
-            to_post['notification'] = notification
+        _cs: LookylooCaptureSettings | None
+        _comp_s: CompareSettings | None
+        _ns: NotificationSettings | None
+        if isinstance(capture_settings, dict):
+            _cs = LookylooCaptureSettings(**capture_settings)
+        else:
+            _cs = capture_settings
 
-        r = self.session.post(urljoin(self.root_url, 'monitor'), json=to_post)
+        if isinstance(compare_settings, dict):
+            _comp_s = CompareSettings(**compare_settings)
+        else:
+            _comp_s = compare_settings
+
+        if isinstance(notification, dict):
+            _ns = NotificationSettings(**notification)
+        else:
+            _ns = notification
+
+        to_post = MonitorCaptureSettings(
+            capture_settings=_cs,
+            frequency=frequency,
+            never_expire=never_expire,
+            expire_at=expire_at,
+            collection=collection,
+            compare_settings=_comp_s,
+            notification=_ns
+        )
+        r = self.session.post(urljoin(self.root_url, 'monitor'), data=to_post.model_dump_json())
         return r.json()
 
     def instance_settings(self) -> MonitoringInstanceSettings:

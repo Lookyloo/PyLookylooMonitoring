@@ -5,7 +5,8 @@ import unittest
 
 from datetime import datetime, timedelta
 
-from pylookyloomonitoring import PyLookylooMonitoring, CaptureSettings
+from lookyloo_models import LookylooCaptureSettings
+from pylookyloomonitoring import PyLookylooMonitoring
 
 
 class TestBasic(unittest.TestCase):
@@ -25,7 +26,7 @@ class TestBasic(unittest.TestCase):
         self.assertTrue('force_expire' in settings, settings)
 
     def test_monitor_update(self) -> None:
-        capture_settings: CaptureSettings = {'url': 'https://circl.lu'}
+        capture_settings = LookylooCaptureSettings(url='https://circl.lu')
         monitor_uuid = self.client.monitor(capture_settings,
                                            frequency='hourly',
                                            expire_at=datetime.now() + timedelta(hours=2),
@@ -35,13 +36,13 @@ class TestBasic(unittest.TestCase):
         for entry in monitored:
             if entry['uuid'] == monitor_uuid:
                 settings = self.client.settings_monitor(monitor_uuid)
-                self.assertEqual(settings['frequency'], 'daily', settings)
+                self.assertEqual(settings.frequency, 'daily', settings)
                 break
         else:
             raise Exception(f'Unable to find {monitor_uuid}.')
 
     def test_monitor_expire(self) -> None:
-        capture_settings: CaptureSettings = {'url': 'https://circl.lu'}
+        capture_settings = LookylooCaptureSettings(url='https://circl.lu')
         monitor_uuid = self.client.monitor(capture_settings,
                                            frequency='hourly',
                                            expire_at=datetime.now() + timedelta(hours=2),

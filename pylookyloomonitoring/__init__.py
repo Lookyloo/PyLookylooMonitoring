@@ -6,11 +6,10 @@ import sys
 
 from typing import Any
 
-from .api import PyLookylooMonitoring, CaptureSettings  # noqa
+from .api import PyLookylooMonitoring  # noqa
 
 __all__ = [
     'PyLookylooMonitoring',
-    'CaptureSettings'
 ]
 
 
