@@ -27,7 +27,7 @@ class TestBasic(unittest.TestCase):
 
     def test_monitor_update(self) -> None:
         capture_settings = LookylooCaptureSettings(url='https://circl.lu')
-        monitor_uuid = self.client.monitor(capture_settings,
+        monitor_uuid = self.client.monitor(capture_settings=capture_settings,
                                            frequency='hourly',
                                            expire_at=datetime.now() + timedelta(hours=2),
                                            collection="testing")
@@ -43,7 +43,7 @@ class TestBasic(unittest.TestCase):
 
     def test_monitor_expire(self) -> None:
         capture_settings = LookylooCaptureSettings(url='https://circl.lu')
-        monitor_uuid = self.client.monitor(capture_settings,
+        monitor_uuid = self.client.monitor(capture_settings=capture_settings,
                                            frequency='hourly',
                                            expire_at=datetime.now() + timedelta(hours=2),
                                            collection="testing")

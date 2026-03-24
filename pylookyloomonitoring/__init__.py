@@ -28,7 +28,7 @@ def main() -> None:
         print(f'Unable to reach {client.root_url}. Is the server up?')
         sys.exit(1)
     if args.monitor_url:
-        response = client.monitor({'url': args.monitor_url, 'listing': False}, frequency='hourly')
+        response = client.monitor(capture_settings={'url': args.monitor_url, 'listing': False}, frequency='hourly')
     else:
         response = client.changes(args.compare)
     print(json.dumps(response, indent=2))
