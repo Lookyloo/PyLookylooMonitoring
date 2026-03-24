@@ -127,7 +127,7 @@ class PyLookylooMonitoring():
         :param uuid: The UUID we want the settings of.
         """
         r = self.session.get(urljoin(self.root_url, str(Path('settings_monitor', uuid))))
-        return MonitorCaptureSettings.model_validate(r.json())
+        return MonitorCaptureSettings.model_validate_json(r.json())
 
     def stop_monitor(self, uuid: str) -> bool | dict[str, str]:
         """Stop monitoring a specific capture
@@ -238,7 +238,6 @@ class PyLookylooMonitoring():
             else:
                 to_post = monitor_capture_settings
         else:
-            print(capture_settings)
             _cs: LookylooCaptureSettings | None
             _comp_s: CompareSettings | None
             _ns: NotificationSettings | None
