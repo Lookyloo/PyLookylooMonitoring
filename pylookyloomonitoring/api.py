@@ -195,7 +195,7 @@ class PyLookylooMonitoring():
         )
         r = self.session.post(urljoin(self.root_url, str(Path('update_monitor', monitor_uuid))),
                               data=to_post.model_dump_json(exclude_none=True))
-        return r.json()
+        return r.text
 
     @overload
     def monitor(self, *, monitor_capture_settings: MonitorCaptureSettings | dict[str, Any] | None=None) -> str:
@@ -267,7 +267,7 @@ class PyLookylooMonitoring():
                 notification=_ns
             )
         r = self.session.post(urljoin(self.root_url, 'monitor'), data=to_post.model_dump_json(exclude_none=True))
-        return r.json()
+        return r.text
 
     def instance_settings(self) -> MonitoringInstanceSettings:
         """Get the settings of the monitoring instance."""
