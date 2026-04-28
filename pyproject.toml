@@ -13,7 +13,7 @@ dynamic = [ "classifiers" ]
 
 dependencies = [
     "requests (>=2.33.1)",
-    "lookyloo-models (>=0.2.3)"
+    "lookyloo-models (>=0.2.4)"
 ]
 
 [project.urls]
