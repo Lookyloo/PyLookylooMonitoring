@@ -251,8 +251,11 @@ class PyLookylooMonitoring():
             else:
                 _comp_s = compare_settings
 
-            if isinstance(notification, dict) and notification:
-                _ns = NotificationSettings.model_validate(notification)
+            if isinstance(notification, dict):
+                if notification:
+                    _ns = NotificationSettings.model_validate(notification)
+                else:
+                    _ns = None
             else:
                 _ns = notification
 
